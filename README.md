@@ -1,4 +1,4 @@
-# Leonidasoy.fi 2017 edition
+# Secure dockerized Wordpress suitable for integration into a CI pipeline
 
 [![Build Status](https://drone.plat2.leonidasoy.fi/api/badges/leonidas/leonidas-2017/status.svg)](https://drone.plat2.leonidasoy.fi/leonidas/leonidas-2017)
 
