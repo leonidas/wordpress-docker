@@ -8,8 +8,8 @@ Workspace for WordPress theme development.
 
 Requirements:
 
-* Docker (tested: 17.03 CE)
-* Docker Compose (tested: 0.11.2)
+* Docker (tested: 17.07 CE)
+* Docker Compose (tested: 1.16.0)
 
 The development environment should start up hands-free by simply running
 
