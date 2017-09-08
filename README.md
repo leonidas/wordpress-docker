@@ -49,3 +49,8 @@ When deployed in Kontena, use the `<stack>_maintenance_mode` secret to control m
 
 * Do not `VOLUME /var/www/html` but `VOLUME /var/www/html/wp-content` instead
 * Files outside that are read only (owned by `root:www-data`)
+
+## TODO
+
+- [ ] Block PHP files from `wp-content/uploads` using htaccess
+- [ ] Install plugins and themes at build time
