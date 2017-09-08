@@ -1,0 +1,26 @@
+
+# These lines will be appended from Dockerfile.footer to Dockerfile.dist to produce a working Dockerfile
+# If you change Dockerfile.footer, remember to re-run wordpress/update-dockerfile.sh.
+# Do not edit the resulting Dockerfile manually. Changes will be lost.
+COPY htaccess /var/www/html/.htaccess
+
+# Hack to restore backup
+# COPY wp-content.tar.gz /usr/src/
+
+RUN cd /var/www/html \
+    && tar cf - --one-file-system -C /usr/src/wordpress . | tar xf -
+
+# The contents of wp-content/ will be copied to /var/www/html/wp-content (a volume!) by docker-entrypoint.footer.sh
+# COPY wp-content /usr/src/wp-content
+
+RUN mkdir -p wp-content/uploads \
+    && chown -R root:www-data . \
+    && chown -R www-data:www-data wp-content \
+    && find . -type d -exec chmod 755 \{\} + \
+    && find . -type f -exec chmod 644 \{\} + \
+    && chmod -R g+w wp-content/uploads wp-content/plugins \
+    && chmod +x /usr/local/bin/docker-entrypoint.sh \
+    && echo "define('FS_METHOD', 'direct');" >> /var/www/html/wp-config-sample.php \
+    && echo 'sendmail_path = "/usr/sbin/ssmtp -t"' > /usr/local/etc/php/conf.d/mail.ini
+
+VOLUME /var/www/html/wp-content

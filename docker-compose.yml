@@ -1,0 +1,33 @@
+version: '2.2'
+services:
+  wordpress:
+    build: .
+    image: leonidas/wordpress
+    init: true
+    links:
+      - mariadb
+    ports:
+      - 8000:80
+    volumes:
+      - wordpress-content:/var/www/html/wp-content
+      - ./wp-content/themes/leonidas-2017:/var/www/html/wp-content/themes/leonidas-2017
+    environment:
+      WORDPRESS_MAINTENANCE_MODE: ${WORDPRESS_MAINTENANCE_MODE:-false}
+      WORDPRESS_DB_HOST: mariadb
+      WORDPRESS_DB_NAME: leonidas
+      WORDPRESS_DB_PASSWORD: secret
+      WORDPRESS_DB_USER: leonidas
+
+  mariadb:
+    image: mariadb
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: leonidas
+      MYSQL_PASSWORD: secret
+      MYSQL_USER: leonidas
+
+volumes:
+  mariadb-data: {}
+  wordpress-content: {}

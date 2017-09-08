@@ -1,0 +1,73 @@
+stack: leonidas/wordpress
+version: '0.1.0'
+
+variables:
+  mysql_root_password:
+    type: string
+    from:
+      vault: ${STACK}_mysql_root_password
+      random_string: 63
+    to:
+      vault: ${STACK}_mysql_root_password
+  mysql_password:
+    type: string
+    from:
+      vault: ${STACK}_mysql_password
+      random_string: 63
+    to:
+      vault: ${STACK}_mysql_password
+  maintenance_mode:
+    type: boolean
+    default: true
+    from:
+      vault: ${STACK}_maintenance_mode
+    to:
+      vault: ${STACK}_maintenance_mode
+
+services:
+  wordpress:
+    image: leonidas/wordpress
+    stateful: true
+    links:
+      - mariadb
+      - platform/lb1
+    secrets:
+      - secret: ${STACK}_mysql_password
+        type: env
+        name: WORDPRESS_DB_PASSWORD
+      - secret: aws_ses_smtp_username
+        type: env
+        name: WORDPRESS_SMTP_USERNAME
+      - secret: aws_ses_smtp_password
+        type: env
+        name: WORDPRESS_SMTP_PASSWORD
+    environment:
+      WORDPRESS_MAINTENANCE_MODE: ${maintenance_mode}
+      WORDPRESS_DB_HOST: mariadb
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+
+      WORDPRESS_SMTP_SERVER: email-smtp.eu-west-1.amazonaws.com
+
+      # KONTENA_LB_MODE: http
+      # KONTENA_LB_BALANCE: roundrobin
+      # KONTENA_LB_INTERNAL_PORT: 80
+      # KONTENA_LB_VIRTUAL_HOSTS: example.com
+      # KONTENA_LB_CUSTOM_SETTINGS: |
+      #   redirect scheme https if !{ ssl_fc }
+      #   http-response set-header Strict-Transport-Security max-age=16000000;\ includeSubDomains;\ preload;
+
+  mariadb:
+    image: mariadb
+    stateful: true
+    secrets:
+      - secret: ${STACK}_mysql_root_password
+        type: env
+        name: MYSQL_ROOT_PASSWORD
+      - secret: ${STACK}_mysql_password
+        type: env
+        name: MYSQL_PASSWORD
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+
